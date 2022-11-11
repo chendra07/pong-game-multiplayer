@@ -12,6 +12,8 @@ const socketServer = io(httpServer, {
 
 const sockets = require("./sockets");
 
+const PORT = 3000;
+
 httpServer.listen(PORT);
 console.log("listening to port: ", PORT);
 
