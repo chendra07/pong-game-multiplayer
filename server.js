@@ -15,7 +15,7 @@ const sockets = require("./sockets");
 
 const PORT = 3000;
 
-httpServer.listen(process.env.port || PORT);
+httpServer.listen(process.env.PORT || PORT);
 console.log("listening to port: ", PORT);
 
 sockets.listen(socketServer);
