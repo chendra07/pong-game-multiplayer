@@ -1,6 +1,7 @@
 // Canvas Related
 const canvas = document.createElement("canvas");
 const context = canvas.getContext("2d");
+const isMobile = window.matchMedia("(max-width: 600px)");
 const socket = io("/pong");
 let paddleIndex = 0;
 let isReferee = false;
@@ -167,6 +168,16 @@ function ballBoundaries() {
   }
 }
 
+function movementLimit(offsetX, paddleIndex) {
+  paddleX[paddleIndex] = offsetX;
+  if (paddleX[paddleIndex] < 0) {
+    paddleX[paddleIndex] = 0;
+  }
+  if (paddleX[paddleIndex] > width - paddleWidth) {
+    paddleX[paddleIndex] = width - paddleWidth;
+  }
+}
+
 // Called Every Frame
 function animate() {
   if (isReferee) {
@@ -187,21 +198,25 @@ function loadGame() {
 function startGame() {
   paddleIndex = isReferee ? 0 : 1;
   window.requestAnimationFrame(animate);
-  canvas.addEventListener("mousemove", (e) => {
-    playerMoved = true;
-    paddleX[paddleIndex] = e.offsetX;
-    if (paddleX[paddleIndex] < 0) {
-      paddleX[paddleIndex] = 0;
-    }
-    if (paddleX[paddleIndex] > width - paddleWidth) {
-      paddleX[paddleIndex] = width - paddleWidth;
-    }
-    socket.emit("paddleMove", {
-      xPosition: paddleX[paddleIndex],
+  if (isMobile.matches) {
+    canvas.addEventListener("touchmove", (e) => {
+      var touch = e.touches[0];
+      playerMoved = true;
+
+      movementLimit(touch.clientX, paddleIndex);
     });
-    // Hide Cursor
-    canvas.style.cursor = "none";
-  });
+  } else {
+    canvas.addEventListener("mousemove", (e) => {
+      playerMoved = true;
+
+      movementLimit(e.offsetX, paddleIndex);
+      socket.emit("paddleMove", {
+        xPosition: paddleX[paddleIndex],
+      });
+      // Hide Cursor
+      canvas.style.cursor = "none";
+    });
+  }
 }
 
 // On Load
