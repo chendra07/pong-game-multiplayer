@@ -1,6 +1,7 @@
 const http = require("http");
 const io = require("socket.io");
 const apiServer = require("./api.js");
+const sockets = require("./sockets");
 require("dotenv").config();
 
 const httpServer = http.createServer(apiServer);
@@ -10,8 +11,6 @@ const socketServer = io(httpServer, {
     methods: ["GET", "POST"],
   },
 });
-
-const sockets = require("./sockets");
 
 const PORT = 3000;
 
